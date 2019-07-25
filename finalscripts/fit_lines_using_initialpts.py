@@ -1,6 +1,8 @@
 # it takes 5 vertices as the input along with the cluster. It first finds the boundary points and
 # puts the point into 5 groups based on which edge it is closest to. Then fits a line through these groups
 import matplotlib.pyplot as plt
+import wx
+import sys
 # from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import pandas as pd
@@ -18,19 +20,10 @@ from skimage import feature
 # from DBSCAN import DBSCAN
 from scipy import ndimage
 from crop import crop
+import matplotlib.image as mpimg
+
 
 vertices=[]
-
-def onpick(event):
-	# weird tabbing
-	global vertices
-	thisline = event.artist
-	xdata = thisline.get_xdata()
-	ydata = thisline.get_ydata()
-	ind = event.ind
-	points = tuple(zip(xdata[ind], ydata[ind]))
-	print('onpick points:', points)
-	vertices=vertices+[points[0]]
 
 def error_line(params,*args):
 	#line[0] has slope, line[1] has intercept of the line (the parameters to be fit)
@@ -155,12 +148,48 @@ def fit_lines(x,y,resolution,boundary_thickness_factor,Use_clear_bulk):
 		boundary_pts, boundary_x,boundary_y=clear_bulk(x,y,resolution,boundary_thickness_factor)
 	else:
 		boundary_x,boundary_y=x,y
-	#pick vertices
-	fig = plt.figure()
-	plt.plot(boundary_x,boundary_y, 'ro',picker=5)
-	fig.canvas.mpl_connect('pick_event', onpick)
-	print("pick 5 vertices and close graph")
-	plt.show()
+	
+	def onpick(event):
+	   	global vertices
+	   	ind = event.ind
+	   	point= [boundary_x[ind[0]],boundary_y[ind[0]]]
+	   	print(point)
+	   	vertices= vertices+[point]
+	   	coll._facecolors[event.ind[0],:] = (1,0,0,1)
+		fig.canvas.draw()
+
+	repeat=True
+	while repeat:
+		#pick vertices
+		print("pick 5 vertices and close graph")
+		
+		#show order to pic on an image
+		img=mpimg.imread('pic.png')
+		imgplot = plt.imshow(img)
+		# Turn off tick labels
+		print("follow this order to select points")
+		plt.axis('off')
+		plt.show()
+
+		fig = plt.figure()
+		coll =plt.scatter(boundary_x,boundary_y, c=[1]*len(boundary_x),picker=5)
+		fig.canvas.mpl_connect('pick_event', onpick)
+		plt.show()
+
+		print('\nDo you want to proceed?\n')
+
+		invalidChoice = True
+		while invalidChoice:
+		    Choice = str(raw_input("[y] or [n]? "))
+
+		    if Choice == 'y' or Choice == 'n':
+		        invalidChoice = False
+		        if Choice == 'y':
+		            repeat = False
+		        else:
+		            repeat = True
+		    else:
+		        print('Invalid entry. Try again.')
 
 	#find the slopes and intercepts of all lines
 	lines=[[],[],[],[],[]]
