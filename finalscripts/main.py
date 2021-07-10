@@ -23,7 +23,9 @@ from find_dVgs import find_dVgs
 
 curr_thresh_factor= 0.1
 boundary_thickness_factor=1.0
-data= pd.read_csv('2019-03-12_21-37-12.csv')
+import sys
+first_arg = sys.argv[1]
+data= pd.read_csv('first_arg') #2019-03-12_21-37-12.csv
 
 #get value of respective columns
 VplgR=data['Vplg_L1 (V)'].values
