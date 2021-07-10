@@ -150,12 +150,12 @@ def fit_lines(x,y,resolution,boundary_thickness_factor,Use_clear_bulk):
 		boundary_x,boundary_y=x,y
 	
 	def onpick(event):
-	   	global vertices
-	   	ind = event.ind
-	   	point= [boundary_x[ind[0]],boundary_y[ind[0]]]
-	   	print(point)
-	   	vertices= vertices+[point]
-	   	coll._facecolors[event.ind[0],:] = (1,0,0,1)
+		global vertices
+		ind = event.ind
+		point= [boundary_x[ind[0]],boundary_y[ind[0]]]
+		print(point)
+		vertices= vertices+[point]
+		coll._facecolors[event.ind[0],:] = (1,0,0,1)
 		fig.canvas.draw()
 
 	repeat=True
